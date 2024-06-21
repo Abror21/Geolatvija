@@ -1,0 +1,48 @@
+{
+  "autoFormat": "onSave",
+  "quoteMark": "single",
+  "wrappingStyle": {
+    "maxBindingNamesPerLine": 10,
+    "maxNamesPerWrappedLine": 10,
+    "maxDefaultAndBindingNamesPerLine": 10
+  },
+  "maxLineLength": 120,
+  "emptyLinesBetweenGroups": 0,
+  "groupRules": [
+    {
+      "regex": "^react$"
+    },
+    "context",
+    {
+      "subGroups": [
+        "components",
+        "ui",
+        "antd",
+        "pages"
+      ]
+    },
+    {
+      "subGroups": [
+        "constants",
+        "config",
+        "interfaces",
+        "utils"
+      ]
+    },
+    {
+      "subGroups": [
+        "js-cookie",
+        "html-react-parser",
+        "react-intl",
+        "react-countdown",
+        "react-router-dom",
+        "moment"
+      ]
+    },
+    {
+      "subGroups": [
+        "./style"
+      ]
+    }
+  ]
+}

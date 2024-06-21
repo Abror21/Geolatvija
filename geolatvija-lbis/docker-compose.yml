@@ -1,0 +1,96 @@
+version: '3'
+services:
+  geo-backend:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.local
+    image: geo-backend:latest
+    container_name: geo-backend
+    networks:
+      - geo-app
+    ports:
+      - ${GEO_BACKEND_PORT}:8080
+    environment:
+      WWWUSER: 'www-data'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: debug
+    volumes:
+      - ./api:/srv/www/
+
+  geo-api-outer:
+    build:
+      context: ../geo-api-outer
+      dockerfile: Dockerfile.local
+    image: geo-api-outer:latest
+    container_name: geo-api-outer
+    networks:
+      - geo-app
+    ports:
+      - ${GEO_API_OUTER_PORT}:8081
+    environment:
+      WWWUSER: 'www-data'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: debug
+    volumes:
+      - ${API_OUTER_PATH}:/srv/www/
+
+  postgres:
+    image: postgis/postgis:15-3.3
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=geo
+    volumes:
+      - geo-backend-postgres:/var/lib/postgresql/data
+    networks:
+      - geo-app
+
+  geo-frontend:
+    container_name: geo-frontend
+    build:
+      context: ./spa
+      dockerfile: Dockerfile.local
+    networks:
+      - geo-app
+    volumes:
+      - './spa:/app'
+    ports:
+      - ${GEO_FRONTEND_PORT}:3000
+      - ${GEO_STORYBOOK_PORT}:6006
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  geo-minio:
+    container_name: geo-minio
+    networks:
+      - geo-app
+    image: minio/minio:RELEASE.2023-03-24T21-41-23Z
+    ports:
+      - ${GEO_MINIO_PORT}:9000
+      - 9001:9001
+    environment:
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+    command: server /data --console-address :9001
+    volumes:
+      - ./minio/storage:/data
+
+  geo-clamav:
+    container_name: geo-clamav
+    image: clamav/clamav:1.0
+    networks:
+      - geo-app
+    volumes:
+      - geo-clamav:/var/lib/clamav
+    ports:
+      - 3310:3310
+
+volumes:
+  geo-backend-postgres:
+  geo-clamav:
+    external: true
+networks:
+  geo-app:
+    external: true

@@ -1,0 +1,248 @@
+@charset "UTF-8";
+/* CSS Document */
+
+body{
+     margin:0;
+     padding:0;
+     background:#f2f2f2;
+     font-family:arial;
+   }
+   
+   .content{width:900px;margin:0 auto;}
+   
+   .header{
+       width:100%;
+		background:#fff;
+       border-bottom: 1px solid #e6e6e6;
+   }
+      
+   .logo{
+       background:url('http://proxygds.viss.gov.lv/ATOM_design/banner_new.png');
+       background-size:contain;
+       background-repeat:no-repeat;
+       height:55px;
+       width:450px;
+       margin-left:26%;
+	   margin-right:auto;
+   
+   }
+   
+   /*
+   .logo{
+       background:url('banner_new.jpg');
+       background-size:contain;
+       background-repeat:no-repeat;
+       height:70px;
+       width:150px;
+       margin-left:20px;
+   
+   }
+   */
+   .containerFirst {
+      background: none repeat scroll 0 0 #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 4px;
+      margin-top: 10px;
+      padding:  0;
+      text-align: center;
+    }
+    
+    .divisor {
+      background: none repeat scroll 0 0 #e6e6e6;
+      height: 1px;
+      margin-top: 20px;
+    }
+               
+   h1 {
+      color: #333;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      padding: 35px 35px 0;
+    }
+    
+    .Info {
+      background: none repeat scroll 0 0 #5d8d1f;
+      border-radius: 4px;
+      color: #fff;
+      display: block;
+      font-family: arial;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 10px;
+      padding: 10px 25px;
+      text-decoration: none;
+      overflow:auto;
+    }
+    
+    .Info-link{
+        color:#fff;
+        text-decoration:none;
+        float:left;
+        width:45%;
+        
+    }
+    .Info-rights {
+      float: right;
+      font-size: 12px;
+      margin: 0;
+      text-align: right;
+      width: 45%;
+    }
+    
+    .Firstsubtitle {
+      color: #b3b3b3;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 10px;
+      margin-bottom: 20px;
+    }
+                
+    
+    .FirstAuthor {
+      color: #333;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    
+    .FirstRights{
+      font-size: 14px;
+      color: #fff;
+      margin: 10px 0px;
+    }
+    
+    .feedentry {
+      background: none repeat scroll 0 0 #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 6px;
+      margin: 10px 0;
+      padding: 20px;
+      overflow: auto;
+    }
+    
+    .EntryTitle {
+      color: #333;
+      display: block;
+      float: left;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .date {
+      color: #5d8d1f;
+      float: right;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 0;
+    }
+                
+    .summary {
+      color: #b3b3b3;
+      display: block;
+      font-size: 12px;
+      font-weight: normal;
+      line-height: 25px;
+      margin-top: 15px;
+      text-align: justify;
+    }
+	
+	.overflow{
+	
+		overflow:auto;
+	}
+	#more {
+	  background: none repeat scroll 0 0 #5d8d1f;
+	  border-radius: 50%;
+	  color: #fff;
+	  cursor: pointer;
+	  display: inline-block;
+	  float: left;
+	  font-size: 17px;
+	  font-weight: bold;
+	  height: 20px;
+	  margin-right: 10px;
+	  text-align: center;
+	  width: 20px;
+	}
+	.minus{
+		
+		content:"-"!important;
+		background:red!important;
+	}
+	
+	.HiddenContent{display:none}
+	
+	.HiddenContentText{
+	  width:710px;
+	  margin-right:15px;
+	  float:left;	
+	}
+	
+	.HiddenContentText-full{
+	  width:100%;
+	  margin-right:15px;
+	  float:left;	
+	}
+	
+	.HiddenContentimage{
+	  width:100px;
+	  margin-right:15px;
+	  float:right;	
+	}
+    
+    .Info-link-entry {
+      color: #5d8d1f;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+	
+	
+    .Entryrights {
+	  color: #4c4c4c;
+	  font-size: 12px;
+	  font-weight: bold;
+	  line-height: 10px;
+	  margin-top: 15px;
+	  width: 700px;
+	}
+    
+    .EntryAuthor {
+      color: #b3b3b3;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 20px;
+      padding-left: 10px;
+      text-align: justify;
+      width: 700px;
+    }
+	
+
+#colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
+#cboxWrapper {max-width:none;}
+#cboxOverlay{position:fixed; width:100%; height:100%;}
+#cboxContent{position:relative;}
+.cboxPhoto{float:left; margin:auto; border:0; display:block; max-width:none; -ms-interpolation-mode:bicubic;}
+.cboxIframe{width:100%; height:100%; display:block; border:0; padding:0; margin:0;}
+#colorbox, #cboxContent, #cboxLoadedContent{box-sizing:content-box; -moz-box-sizing:content-box; -webkit-box-sizing:content-box;}
+
+#cboxOverlay{background:#000; opacity: 0.9; filter: alpha(opacity = 90);}
+#colorbox{outline:0;}
+#cboxContent{ overflow:hidden;}
+#cboxClose {
+  background: none repeat scroll 0 0 #fff;
+  border: medium none;
+  border-radius: 50%;
+  color: #000;
+  cursor: pointer;
+  display: none;
+  font-family: arial;
+  font-size: 14px;
+  font-weight: bold;
+  height: 26px;
+  padding: 0 6px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}#cboxClose:hover{background-position:-25px -25px;}
+

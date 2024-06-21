@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+max_retries=10
+
+#while true
+#do
+#    php artisan app:db-health-check --quiet
+#    if [[ $? -ne 0 ]]; then
+#        if [[ "$max_retries" -lt 0 ]]; then
+#            echo "Failed to establish DB connection with 10 retries"
+#            exit 1
+#        else
+#            max_retries=$((max_retries - 1))
+#            echo "Retrying database connection..."
+#            sleep 5
+#        fi
+#    else
+#        echo "Database connection established!"
+#        break
+#    fi
+#done
+
+touch /srv/www/storage/logs/laravel.log
+
+# Create view folder if doesn't exist
+mkdir -p views
+
+# Adjust storage rights
+chown -R www-data:www-data /srv/www/storage
+
+# Perform migrations
+php artisan migrate --force
+
+php artisan optimize:clear
+
+# Start cron
+ /etc/init.d/cron start
+
+/usr/bin/supervisord

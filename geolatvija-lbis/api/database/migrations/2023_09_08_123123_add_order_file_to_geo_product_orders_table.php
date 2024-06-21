@@ -1,0 +1,36 @@
+<?php
+
+use App\Enums\GeoProductStatus;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('geo_product_orders', function (Blueprint $table) {
+            $table->unsignedBigInteger('product_file_attachment_id')->nullable();
+            $table->foreign('product_file_attachment_id')->references('id')->on('attachments');
+        });
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('geo_product_orders', function (Blueprint $table) {
+            $table->dropForeign(['product_file_attachment_id']);
+            $table->dropColumn('product_file_attachment_id');
+        });
+    }
+};

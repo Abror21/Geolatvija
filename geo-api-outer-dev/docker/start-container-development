@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+composer install
+
+# Adjust storage rights
+chown -R www-data:www-data /srv/www/storage
+
+# Start cron
+/etc/init.d/cron start
+
+/usr/bin/supervisord

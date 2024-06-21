@@ -1,0 +1,16 @@
+{
+  "login.login": "Pieslēgties",
+  "login.autorization_info": "Autorizācija ar internetbanku, eID vai eParakstu, izmantojot Latvija.lv sistēmu",
+  "login.login_with_username": "Ienākt ar lietotāja ID un paroli",
+  "login.login_latvija_lv": "Pieslēgties ar Latvija.lv",
+  "login.cancel": "Atcelt",
+  "login.username_id": "Lietotāja ID",
+  "login.password": "Parole",
+
+  "general.found_no_data": "Found no data",
+  "general.filter": "Filter",
+  "general.search": "Search",
+  "general.clear": "Clear",
+  "general.page": "/Page",
+  "general.go_to": "Go to"
+}

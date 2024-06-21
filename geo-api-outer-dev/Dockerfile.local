@@ -1,0 +1,48 @@
+FROM php:8.3-fpm-bullseye
+
+ARG COMPOSER_VERSION=2.2.0
+ARG PHPUNIT_VERSION=9.5.1
+
+WORKDIR /srv/www
+
+# Add Forticlient certificate
+COPY ./docker/certs/Fortinet_CA_SSL.cer /usr/share/ca-certificates/
+RUN grep -qxF 'Fortinet_CA_SSL.cer' /etc/ca-certificates.conf || echo 'Fortinet_CA_SSL.cer' >> /etc/ca-certificates.conf && \
+    update-ca-certificates
+
+RUN apt-get update && apt-get install -y curl nginx telnet \
+    libonig-dev libxml2-dev libzip-dev zip \
+    unzip dos2unix nano procps wget git supervisor \
+    libcurl4-openssl-dev pkg-config gnupg2 libaio1 libpng-dev
+
+RUN apt-get update && ACCEPT_EULA=Y \
+    && apt-get install -y unixodbc-dev
+
+# pgsql
+RUN apt-get update && apt-get install -y libpq-dev
+
+RUN docker-php-ext-install bcmath intl curl pdo gd zip pdo_pgsql xml soap
+
+RUN pecl install redis xdebug && \
+    docker-php-ext-enable redis xdebug pdo_pgsql
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer
+
+# Install PHPunit
+# RUN wget https://phar.phpunit.de/phpunit-${PHPUNIT_VERSION}.phar
+# RUN chmod +x phpunit-${PHPUNIT_VERSION}.phar && mv phpunit-${PHPUNIT_VERSION}.phar /usr/local/bin/phpunit
+
+COPY ./docker/nginx/conf.d/api-outer.conf /etc/nginx/conf.d/api-outer.conf
+RUN rm /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+COPY ./docker/start-container-development /usr/local/bin/start-container
+RUN dos2unix /usr/local/bin/start-container
+COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
+COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN chmod +x /usr/local/bin/start-container
+
+EXPOSE 8082 9000
+
+ENTRYPOINT ["start-container"]

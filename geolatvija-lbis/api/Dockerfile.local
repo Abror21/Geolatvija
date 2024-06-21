@@ -1,0 +1,46 @@
+FROM php:8.3.1-fpm-bullseye
+
+ARG COMPOSER_VERSION=2.6.0
+
+WORKDIR /srv/www
+
+# Add Forticlient certificate
+COPY ./docker/certs/Fortinet_CA_SSL.cer /usr/share/ca-certificates/
+RUN grep -qxF 'Fortinet_CA_SSL.cer' /etc/ca-certificates.conf || echo 'Fortinet_CA_SSL.cer' >> /etc/ca-certificates.conf && \
+    update-ca-certificates
+
+RUN apt-get update && apt-get install -y curl nginx cron telnet \
+    libonig-dev libxml2-dev libzip-dev zip \
+    unzip dos2unix nano procps wget git supervisor \
+    libcurl4-openssl-dev pkg-config gnupg2 libaio1 libpng-dev libssl-dev
+
+RUN apt-get update && ACCEPT_EULA=Y \
+    && apt-get install -y unixodbc-dev
+
+# pgsql
+RUN apt-get update && apt-get install -y libpq-dev
+
+RUN docker-php-ext-install bcmath intl curl pdo gd zip pdo_pgsql sockets ftp
+
+RUN pecl install redis xdebug && \
+    docker-php-ext-enable redis xdebug pdo_pgsql ftp
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=${COMPOSER_VERSION} --filename=composer
+
+# Add cron
+RUN crontab -l -u www-data | { cat; echo "* * * * * cd /srv/www/ && /usr/local/bin/php artisan schedule:run >> /dev/null 2>&1"; } | crontab -u www-data -
+
+COPY ./docker/nginx/conf.d/geo-backend.conf /etc/nginx/conf.d/geo-backend.conf
+RUN rm /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+COPY ./docker/start-container-development /usr/local/bin/start-container
+RUN dos2unix /usr/local/bin/start-container
+COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
+COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN chmod +x /usr/local/bin/start-container
+
+EXPOSE 8081
+
+ENTRYPOINT ["start-container"]

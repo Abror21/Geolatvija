@@ -1,0 +1,38 @@
+version: '3'
+services:
+  geo-backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile.local
+    image: geo-backend:latest
+    container_name: geo-backend
+    networks:
+      - geo-app
+    ports:
+      - 8080:8080
+    environment:
+      WWWUSER: 'www-data'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: debug
+    volumes:
+      - ./:/srv/www/
+
+  postgres:
+    image: postgres:15.1
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=geo
+    volumes:
+      - geo-backend-postgres:/var/lib/postgresql/data
+    networks:
+      - geo-app
+
+volumes:
+  geo-backend-postgres:
+    external: true
+networks:
+  geo-app:
+    external: true

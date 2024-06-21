@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <script src="http://localhost:8080/map/MapApi"></script>
+    <title>GEO</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <iframe
+      width="100%"
+      scrolling="no"
+      height="480"
+      style="border: 0; overflow: hidden"
+      src="http://localhost/map/?id=82fdf629-ba44-4163-9241-95146042a22b"
+      id="geolatvija-map-modal"
+    ></iframe>
+  </body>
+  <script>
+    function initGeolatvija(map) {
+      console.log("initGeolatvija");
+      map.EnableMarkerPopups(true);
+
+      var markers = [
+        { x: 506646, y: 312794, description: "Alberta iela 10, Rīga" },
+        {
+          x: 506686,
+          y: 312764,
+          description: "Apraksts 2",
+          color: "rgba(170, 30, 200, 1.0)",
+        },
+      ];
+
+      for (marker in markers) {
+        // add navigation linkt to description
+        markers[marker].description +=
+          '<div class="navlink"><a href="https://www.google.com/maps/search/?api=1&query=" target="_blank">How to get</a></div>';
+      }
+
+      map.ShowMarkers(markers);
+      //map.ZoomToPoint(510982.62, 311289.86);
+
+      map.RegisterForEvent("onMapClick", function (x, y) {
+        console.log("onMapClick");
+        console.log({ x: x, y: y });
+        //map.UnRegisterForEvent("onMapClick");
+      });
+
+      map.RegisterForEvent("onMarkerClick", function (x, y, markers) {
+        console.log("onMarkerClick");
+        console.log({ x, y, markers });
+        //map.UnRegisterForEvent("onMarkerClick");
+      });
+
+      map.RegisterForEvent(
+        "onApplicationMarkerClick",
+        function (x, y, markers) {
+          console.log("onApplicationMarkerClick");
+          console.log({ x, y, markers });
+          //map.UnRegisterForEvent("onApplicationMarkerClick");
+        }
+      );
+
+      //map.EnableApplicationMarkerPopups(false);
+      //map.EnableMarkerPopups(false);
+
+      map.ZoomToAddress(["0001000"], ["106570942"]);
+    }
+    mapAPI("geolatvija-map-modal", initGeolatvija);
+  </script>
+</html>

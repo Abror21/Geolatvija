@@ -1,0 +1,31 @@
+export const latvian_lv = {
+  name: 'latvian_lv',
+  months: [
+    ['Janvāris', 'Jan'],
+    ['Februāris', 'Feb'],
+    ['Marts', 'Mar'],
+    ['Aprīlis', 'Apr'],
+    ['Maijs', 'Mai'],
+    ['Jūnijs', 'Jūn'],
+    ['Jūlijs', 'Jūl'],
+    ['Augusts', 'Aug'],
+    ['Septembris', 'Sep'],
+    ['Oktobris', 'Okt'],
+    ['Novembris', 'Nov'],
+    ['Decembris', 'Dec'],
+  ],
+  weekDays: [
+    ['Sestdiena', 'Se'],
+    ['Svētdiena', 'Sv'],
+    ['Pirmdiena', 'P'],
+    ['Otrdiena', 'O'],
+    ['Trešdiena', 'T'],
+    ['Ceturtdiena', 'C'],
+    ['Piektdiena', 'Pk'],
+  ],
+  digits: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+  meridiems: [
+    ['priekšpusdienā', 'AM'],
+    ['pēcpusdienā', 'PM'],
+  ],
+};

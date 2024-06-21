@@ -1,0 +1,265 @@
+// Resource endpoints (for artifact storage, usage and deployment)
+def endpointDockerRegistry = 'tapis-registry.esynergy.lv'
+def artifactAppDockerRepo = 'geoportal'
+def artifactAppFrontendDockerImageName = 'geoportal-frontend'
+def artifactAppBackendDockerImageName = 'geoportal-backend'
+
+def containerDefault = 'ubuntu:xenial-20210804'
+
+def versionTag = ''
+def endpointAppGitRepo = ''
+def endpointAppGitRepoCredentials = ''
+
+def credentialDocker = ''
+
+def credentialsServer = 'root@192.168.113.75'
+def sshServerKeyId = 'SSH_geo-network-dev'
+
+def dockerSwarmFrontendStackName = 'geoportal-app-test_geo-frontend'
+def dockerSwarmBackendStackName = 'geoportal-app-test_geo-backend'
+
+pipeline {
+    agent any
+    environment {
+        registryCredential = credentials('CREDENTIAL_ID_DOCKER_NEXUS_REGISTRY')
+    }
+
+    parameters {
+        //Server user+pw
+        string(
+            name: 'APPLICATION_SERVER_SSH_USER_IP_ID',
+            defaultValue: params.APPLICATION_SERVER_SSH_USER_IP_ID ?: credentialsServer,
+            description: 'Servera parametri, uz kuru JEnkins veiks piegādi- Piemērs: root@192.168.13.28'
+        )
+
+        //SSH key
+        string(
+            name: 'APPLICATION_SERVER_SSH_ID',
+            defaultValue: params.APPLICATION_SERVER_SSH_ID ?: sshServerKeyId,
+            description: 'Servera SSH atslēgas ID, Piemērs: SSH_TAPIS-application'
+        )
+
+        string(
+            name: 'DOCKER_FRONTEND_STACK_NAME',
+            defaultValue: params.DOCKER_FRONTEND_STACK_NAME ?: dockerSwarmFrontendStackName,
+            description: 'Docker swarm Frontend stack nosaukums (name)  Piemērs: StackName_ServiceName'
+        )
+		
+		string(
+            name: 'DOCKER_BACKEND_STACK_NAME',
+            defaultValue: params.DOCKER_BACKEND_STACK_NAME ?: dockerSwarmBackendStackName,
+            description: 'Docker swarm Backend stack nosaukums (name)  Piemērs: StackName_ServiceName'
+        )
+
+        string(
+            name: 'APPLICATION_SERVER_SSH_USER_IP_ID',
+            defaultValue: params.APPLICATION_SERVER_SSH_USER_IP_ID ?: credentialsServer,
+            description: 'Servera parametri, uz kuru JEnkins veiks piegādi- Piemērs: root@192.168.13.28'
+        )
+
+        string(
+            name: 'CREDENTIAL_ID_DOCKER_NEXUS_REGISTRY',
+            defaultValue: params.CREDENTIAL_ID_DOCKER_NEXUS_REGISTRY ?: credentialDocker,
+            description: 'Jenkins noslēpuma ID, kuru jāizmanto autentifikācijai un autorizācijai pret Docker Nexus reģistru'
+        )
+
+        // Artifact information
+        string(
+            name: 'ENDPOINT_DOCKER_REGISTRY',
+            defaultValue: params.ENDPOINT_DOCKER_REGISTRY ?: endpointDockerRegistry,
+            description: 'Docker reģistra servera nosaukums. Piemēram: docker.example.com'
+        )
+        string(
+            name: 'ARTIFACT_APP_DOCKER_REPO',
+            defaultValue: params.ARTIFACT_APP_DOCKER_REPO ?: artifactAppDockerRepo,
+            description: 'Lietotnes projekta Docker reģistra repozitorija nosaukums. Piemēram: example-projekts'
+        )
+        string(
+            name: 'ARTIFACT_APP_FRONTEND_DOCKER_IMAGE_NAME',
+            defaultValue: params.ARTIFACT_APP_FRONTEND_DOCKER_IMAGE_NAME ?: artifactAppFrontendDockerImageName,
+            description: 'Lietotnes Frontend projekta Docker imidža nosaukums. Piemēram: spa-example'
+        )
+		string(
+            name: 'ARTIFACT_APP_BACKEND_DOCKER_IMAGE_NAME',
+            defaultValue: params.ARTIFACT_APP_BACKEND_DOCKER_IMAGE_NAME ?: artifactAppBackendDockerImageName,
+            description: 'Lietotnes projekta Docker imidža nosaukums. Piemēram: api-example'
+        )
+
+        // Version management
+        string(
+            name: 'VERSION_TAG',
+            defaultValue: params.VERSION_TAG ?: versionTag,
+            description: 'Lietotnes versijas birka. Šī birka tiks izmantota kā git repozitorija lejupielādes birka. Piemēram: master vai 1.0.0'
+        )
+
+        string(
+            name: 'ENDPOINT_APP_GIT_REPO',
+            defaultValue: params.ENDPOINT_APP_GIT_REPO ?: endpointAppGitRepo,
+            description: 'Lietotnes projekta repozitorija adrese'
+        )
+
+        string(
+            name: 'ENDPOINT_APP_GIT_REPO_CREDENTIALS',
+            defaultValue: params.ENDPOINT_APP_GIT_REPO_CREDENTIALS ?: endpointAppGitRepoCredentials,
+            description: 'Jenkins noslēpuma ID, kuru jāizmanto autentifikācijai un autorizācijai pret lietotnes projekta repozitoriju'
+        )
+    }
+
+    stages {
+        stage('[Prestage] Parameter parsing') {
+            steps {
+                script {
+                    // SSH user+server
+                    credentialsServer = params.APPLICATION_SERVER_SSH_USER_IP_ID
+                    sh "echo 'credentialsServer: ${credentialsServer}'"
+
+                    sshServerKeyId = params.APPLICATION_SERVER_SSH_ID
+                    sh "echo 'sshServerKeyId: ${sshServerKeyId}'"
+
+                    dockerSwarmStackName = params.DOCKER_STACK_NAME
+                    sh "echo 'dockerSwarmStackName: ${dockerSwarmStackName}'"
+
+                    // SSH user+server
+                    credentialsServer = params.APPLICATION_SERVER_SSH_USER_IP_ID
+                    sh "echo 'credentialsServer: ${credentialsServer}'"
+
+                    // Registry credentials
+                    credentialDocker = params.CREDENTIAL_ID_DOCKER_NEXUS_REGISTRY
+                    sh "echo 'credentialDocker: ${credentialDocker}'"
+
+                    endpointDockerRegistry = params.ENDPOINT_DOCKER_REGISTRY
+					sh "echo 'endpointDockerRegistry: ${endpointDockerRegistry}'"
+
+                    // Artifact information
+                    artifactAppDockerRepo = params.ARTIFACT_APP_DOCKER_REPO
+                    sh "echo 'artifactAppDockerRepo: ${artifactAppDockerRepo}'"
+					
+                    artifactAppFrontendDockerImageName = params.ARTIFACT_APP_FRONTEND_DOCKER_IMAGE_NAME
+                    sh "echo 'artifactAppFrontendDockerImageName: ${artifactAppFrontendDockerImageName}'"
+					
+					artifactAppBackendDockerImageName = params.ARTIFACT_APP_BACKEND_DOCKER_IMAGE_NAME
+                    sh "echo 'artifactAppBackendDockerImageName: ${artifactAppBackendDockerImageName}'"
+
+                    dockerSwarmBackendStackName = params.DOCKER_BACKEND_STACK_NAME
+                    sh "echo 'dockerSwarmBackendStackName: ${dockerSwarmBackendStackName}'"
+
+                    dockerSwarmFrontendStackName = params.DOCKER_FRONTEND_STACK_NAME
+                    sh "echo 'dockerSwarmFrontendStackName: ${dockerSwarmFrontendStackName}'"
+
+                    // Version management
+                    versionTag = params.VERSION_TAG
+                    sh "echo 'versionTag: ${versionTag}'"
+                    endpointAppGitRepo = params.ENDPOINT_APP_GIT_REPO
+                    sh "echo 'endpointAppGitRepo: ${endpointAppGitRepo}'"
+                    endpointAppGitRepoCredentials = params.ENDPOINT_APP_GIT_REPO_CREDENTIALS
+                    sh "echo 'endpointAppGitRepoCredentials: ${endpointAppGitRepoCredentials}'"
+                }
+            }
+        }
+
+        stage('Checkout code') {
+            steps {
+                script {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "refs/tags/${versionTag}"]],
+                        doGenerateSubmoduleConfigurations: false,
+                        submoduleCfg: [],
+                        userRemoteConfigs: [
+                            [
+                                credentialsId: "${endpointAppGitRepoCredentials}",
+                                url: "${endpointAppGitRepo}"
+                            ]
+                        ]
+                    ])
+                }
+            }
+        }
+
+        stage('Build SPA docker image') {
+            agent {
+                node { label 'docker' }
+            }
+
+            steps {
+                script {
+                    def frontendImageName = "${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppFrontendDockerImageName}:${versionTag}"
+				
+					dir('spa') {
+						sh "echo 'Building ${frontendImageName}'"
+						dockerImage = docker.build(frontendImageName, "--no-cache .")
+					}
+                }
+            }
+			
+        }
+
+        stage('Push SPA docker image to repository') {
+            agent {
+                node { label 'docker' }
+            }
+            steps {
+                script {
+                    docker.withRegistry("https://${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppFrontendDockerImageName}:${versionTag}", "${credentialDocker}") {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+		
+		stage('Build API docker image') {
+            agent {
+                node { label 'docker' }
+            }
+
+            steps {
+                script {
+					def backendImageName = "${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppBackendDockerImageName}:${versionTag}"
+                    
+					dir('api') {
+						sh "echo 'Building ${backendImageName}'"
+						dockerImage = docker.build(backendImageName, "--no-cache .")
+					}
+					
+                }
+            }
+			
+        }
+		
+		stage('Push API docker image to repository') {
+            agent {
+                node { label 'docker' }
+            }
+            steps {
+                script {
+                    docker.withRegistry("https://${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppBackendDockerImageName}:${versionTag}", "${credentialDocker}") {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploy'
+                sshagent ( ["""${sshServerKeyId}"""]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${credentialsServer} "
+                            docker service ls;
+                            docker login ${endpointDockerRegistry} -u ${registryCredential_USR} -p ${registryCredential_PSW};
+                            
+							docker pull ${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppFrontendDockerImageName}:${versionTag};
+							
+							docker pull ${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppBackendDockerImageName}:${versionTag};
+                            
+							docker service update --force --image ${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppFrontendDockerImageName}:${versionTag} ${dockerSwarmFrontendStackName};
+							
+							docker service update --force --image ${endpointDockerRegistry}/${artifactAppDockerRepo}/${artifactAppBackendDockerImageName}:${versionTag} ${dockerSwarmBackendStackName};
+                            exit;
+                        "
+                    """
+                }
+            }
+        }
+    }
+}
